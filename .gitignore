@@ -1,0 +1,13 @@
+.gradle/
+build/
+.vscode/
+
+# macOS
+.DS_Store
+
+# secrets / local overrides
+.env
+
+# build output
+bin/
+
