@@ -25,10 +25,13 @@ repositories {
 }
 
 dependencies {
+	implementation(platform("me.paulschwarz:spring-dotenv-bom:5.1.0"))
+	
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc:4.0.1'
 	implementation 'com.baomidou:mybatis-plus-spring-boot4-starter:3.5.15'
 	implementation 'com.baomidou:mybatis-plus-generator:3.5.15'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	developmentOnly 'me.paulschwarz:springboot4-dotenv'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
