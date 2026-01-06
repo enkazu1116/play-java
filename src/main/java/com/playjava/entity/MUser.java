@@ -8,8 +8,8 @@ import java.time.OffsetDateTime;
 @Data
 @TableName("m_user")
 public class MUser {
-    @TableId(type = IdType.ASSIGN_ID)
-    private Long userId;
+    @TableId(type = IdType.ASSIGN_UUID)
+    private String userId;
     private String loginId;
     private String userName;
     private String email;
