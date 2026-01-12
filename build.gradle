@@ -26,7 +26,9 @@ repositories {
 
 dependencies {
 	implementation(platform("me.paulschwarz:spring-dotenv-bom:5.1.0"))
-	
+	// UUID生成ライブラリ
+	implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.0'
+
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc:4.0.1'
 	// implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'com.baomidou:mybatis-plus-spring-boot4-starter:3.5.15'
