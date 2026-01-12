@@ -7,59 +7,47 @@ import lombok.RequiredArgsConstructor;
 import com.playjava.mapper.MUserMapper;
 import com.playjava.entity.MUser;
 import com.playjava.service.adapter.MUserService;
+import com.playjava.handler.UuidFactory;
+import com.playjava.context.UserContext;
+import com.playjava.valueobject.SystemUser;
 
-import java.util.List;
+import java.util.UUID;
 
-/**
- * ユーザーCRUD処理
- * @author testuser
- * @version 1.0
- * @since 1.0
- * @apiNote 簡単なCRUD処理で基本理解
- */
 @Service
 @RequiredArgsConstructor
 public class MUserServiceImpl extends ServiceImpl<MUserMapper, MUser> implements MUserService {
     
     private final MUserMapper mUserMapper;
 
-    // テストユーザー作成
-    public void createUser() {
-        MUser user = new MUser();
+    /**
+     * ユーザー作成処理
+     * @param user UIから@RequestBodyで受け取ったユーザー情報
+     * @return 作成成功の場合true
+     */
+    public boolean createUserImpl(MUser user) {
+        // 初期登録として実行（BOOTSTRAPユーザーとして処理）
+        UserContext.setCurrentUserId(SystemUser.BOOTSTRAP);
         
-        //　ユーザー設定
-        user.setLoginId("customer_test");
-        user.setUserName("customer_test");
-        user.setEmail("customer_test@example.com");
-        user.setPasswordHash("customer_test_password");
-        user.setRole("customer_test");
-        user.setStatus("active");
-        
-        // 登録
-        this.save(user);
-    }
+        try {
+            // UUIDv7を生成してユーザーIDを設定
+            UUID userId = UuidFactory.newUuid();
+            user.setUserId(userId.toString());
 
-    // ユーザー取得
-    public MUser getMUser(Long userId) {
-        return getById(userId);
-    }
+            user.setDeleteFlag(false);
 
-    // ユーザー更新
-    public void updateMUser(Long userId) {
-        MUser user = getById(userId);
-        user.setUserName("admin");
-
-        // 更新
-        updateById(user);
-    }
-
-    // ログインIDとメールアドレスでユーザー検索
-    public List<MUser> findByLoginIdAndEmail(String loginId, String email) {
-        return mUserMapper.findByLoginIdAndEmail(loginId, email);
-    }
-
-    // ログインIDでユーザー検索
-    public List<MUser> getMUserByLoginId(String loginId) {
-         return mUserMapper.getMUserByLoginId(loginId);
+            // ユーザーを保存
+            boolean result = this.save(user);
+            
+            // 保存成功後、作成したユーザーIDをコンテキストに設定
+            if (result) {
+                UserContext.setCurrentUserId(user.getUserId());
+            }
+            
+            return result;
+        } catch (Exception e) {
+            // エラー時はコンテキストをクリア
+            UserContext.clear();
+            throw e;
+        }
     }
 }
