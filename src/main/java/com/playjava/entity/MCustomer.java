@@ -5,13 +5,15 @@ import lombok.Data;
 import java.time.OffsetDateTime;
 
 @Data
-@TableName("m_user")
-public class MUser {
+@TableName("m_customer")
+public class MCustomer {
     @TableId(type = IdType.ASSIGN_UUID)
-    private String userId;
-    private String userName;
-    private String password;
-    private Integer role;
+    private String customerId;
+    private String customerNumber;
+    private String customerName;
+    private String address;
+    private String phoneNumber;
+    private String email;
 
     // 論理削除の設定
     @TableLogic(value = "false", delval = "true")
