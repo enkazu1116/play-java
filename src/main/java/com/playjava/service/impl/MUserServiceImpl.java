@@ -19,6 +19,8 @@ import java.util.UUID;
 import java.util.List;
 import java.time.OffsetDateTime;
 
+import io.vavr.control.Option;
+
 @Service
 @RequiredArgsConstructor
 public class MUserServiceImpl extends ServiceImpl<MUserMapper, MUser> implements MUserService {
@@ -192,11 +194,12 @@ public class MUserServiceImpl extends ServiceImpl<MUserMapper, MUser> implements
         LambdaQueryWrapper<MUser> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(MUser::getUserName, userName);
         
-        // 更新時は自分自身を除外
-        if (excludeUserId != null && !excludeUserId.isEmpty()) {
-            wrapper.ne(MUser::getUserId, excludeUserId);
-        }
+        // 業務ロジック: 更新時は自分自身を除外（Option使用）
+        Option.of(excludeUserId)
+            .filter(id -> !id.isEmpty())
+            .forEach(id -> wrapper.ne(MUser::getUserId, id));
         
+        // MyBatis呼び出し - 副作用あり（一括処理）
         return this.count(wrapper) > 0;
     }
 
