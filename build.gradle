@@ -33,13 +33,16 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	// MyBatis Plus - Spring Boot 4対応版
 	implementation 'com.baomidou:mybatis-plus-spring-boot4-starter:3.5.15'
+	// MyBatis Plus - ページングプラグイン用（v3.5.9以降必須）
+	// PaginationInnerInterceptorを使用するために必要
+	implementation 'com.baomidou:mybatis-plus-jsqlparser:3.5.15'
 	implementation 'com.baomidou:mybatis-plus-extension:3.5.15'
 	implementation 'com.baomidou:mybatis-plus-generator:3.5.15'
-	// MyBatis Plus - ページングプラグイン用（v3.5.9以降必須）
-	implementation 'com.baomidou:mybatis-plus-jsqlparser:3.5.15'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	// SpringDoc OpenAPI (Swagger UI)
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.15'
+	// Vavr
+	implementation 'io.vavr:vavr:0.10.4'
 
 	// .envファイル読み込み
 	developmentOnly 'me.paulschwarz:springboot4-dotenv:5.1.0'
