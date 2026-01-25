@@ -23,6 +23,10 @@ Github Actionsを用いて、プルリクエスト内容のCIを行う環境を�
 ### CircleCI
 Github Actionsでの構築後、使い分けを考えてみて、両者の理解を深める
 
+## APIドキュメント自動化・テスト効率向上
+OpenAPI Swagger, Postmanを使ったテストを行い、APIのテスト効率性を高める。
+Apidocを使用したドキュメント整備
+
 ## NoSQLの理解
 Redis, CassandraDBを使用して、NoSQLの理解を深める。
 **特に…**
