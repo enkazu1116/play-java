@@ -136,6 +136,14 @@ MStockServiceImpl
 - `Product Management Context` (商品情報・価格取得)
 - `Inventory Management Context` (在庫チェック・在庫操作)
 
+**Port / Adapter**
+| 依存先コンテキスト | 用途 | Port | Adapter |
+|-------------------|------|------|---------|
+| Customer Management Context | 顧客の存在確認 | `CustomerExistencePort` | `CustomerExistenceAdapter` |
+| Product Management Context | 商品の存在確認 | `ProductExistencePort` | `ProductExistenceAdapter` |
+| Product Management Context | 商品情報・価格取得 | `ProductManagementPort` | `ProductManagementAdapter` |
+| Inventory Management Context | 在庫チェック・在庫操作 | `StockOperationPort` | `StockOperationAdapter` |
+
 **統合パターン**
 - **Open Host Service**: 在庫管理コンテキストの公開APIを使用
 - **Anti-Corruption Layer**: 他のコンテキストへの依存を抽象化

@@ -3,7 +3,7 @@ package com.playjava.application.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.playjava.frameworks.context.UserContext;
 import com.playjava.enterprise.entity.MCustomer;
-import com.playjava.adapters.service.impl.MCustomerServiceImpl;
+import com.playjava.usecase.service.impl.MCustomerServiceImpl;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

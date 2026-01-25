@@ -3,7 +3,7 @@ package com.playjava.application.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.playjava.adapters.service.impl.OrderServiceImpl;
+import com.playjava.usecase.service.impl.OrderServiceImpl;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
 
-import com.playjava.adapters.dto.CreateOrderRequest;
-import com.playjava.adapters.dto.OrderDetailResponse;
+import com.playjava.usecase.dto.CreateOrderRequest;
+import com.playjava.usecase.dto.OrderDetailResponse;
 import com.playjava.frameworks.context.UserContext;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.playjava.enterprise.entity.TOrder;

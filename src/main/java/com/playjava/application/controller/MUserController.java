@@ -3,7 +3,7 @@ package com.playjava.application.controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.playjava.adapters.service.impl.MUserServiceImpl;
+import com.playjava.usecase.service.impl.MUserServiceImpl;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,7 +2,7 @@ package com.playjava.application.controller;
 
 import com.playjava.frameworks.context.UserContext;
 import com.playjava.enterprise.entity.MUser;
-import com.playjava.adapters.service.impl.MUserServiceImpl;
+import com.playjava.usecase.service.impl.MUserServiceImpl;
 import com.playjava.enterprise.valueobject.SystemUser;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.junit.jupiter.api.AfterEach;

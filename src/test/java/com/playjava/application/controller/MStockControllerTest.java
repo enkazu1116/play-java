@@ -4,7 +4,7 @@ import com.playjava.frameworks.context.UserContext;
 import com.playjava.enterprise.entity.MProduct;
 import com.playjava.enterprise.entity.MStock;
 import com.playjava.frameworks.mapper.MProductMapper;
-import com.playjava.adapters.service.impl.MStockServiceImpl;
+import com.playjava.usecase.service.impl.MStockServiceImpl;
 import com.playjava.enterprise.valueobject.SystemUser;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.junit.jupiter.api.AfterEach;
