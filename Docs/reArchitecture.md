@@ -55,7 +55,7 @@ Clean Architectureを採用し、システム内の構成を4つの階層ごと�
 **フォルダ構成**
 - `dto` … リクエスト／レスポンスや、文脈をまたぐデータの形
 - `handler` … 例外処理・リクエスト前後の共通処理・ユーティリティ的な処理
-- `service.contract` … 他層から呼ばれる**サービスのインターフェース（契約）**。Frameworks の `interface`（Port 実装）と区別するため、こちらは「契約」を表す `contract` を用いる
+- `service.contract` … 他層から呼ばれる**サービスのインターフェース（契約）**。Frameworks の `adapter`（Port 実装）と区別するため、こちらは「契約」を表す `contract` を用いる
 - `service.impl` … 上記の実装。ユースケースの手順と、Port 経由の問い合わせを記述する
 - `port` … **他文脈や外部システムへの「問い合わせ」のインターフェース**（後述）
 
@@ -63,19 +63,19 @@ Clean Architectureを採用し、システム内の構成を4つの階層ごと�
 
 ### Frameworks & Drivers（フレームワークと駆動装置）
 DB・HTTP・設定など、具体的な技術に強く依存する部分。
-ビジネスルールからは参照されず、Port の実装（`interface`）や Mapper がここに属する。
+ビジネスルールからは参照されず、Port の実装（`adapter`）や Mapper がここに属する。
 
 | 役割 | 説明 |
 |------|------|
 | 永続化 | Mapper が DB アクセスを担う。Port の実装が Mapper を呼ぶこともある |
 | 設定・横断関心 | フレームワークの設定や、スレッドローカルなコンテキストなど |
-| 他文脈との接続 | **interface** に、Port の実装を置く。他文脈の Mapper や API を呼び、Adapters 層の Port を満たす。「Adapter」と区別するため、この層のフォルダ名は `interface` とする |
+| 他文脈との接続 | **adapter** に、Port の実装を置く。他文脈の Mapper や API を呼び、usecase 層の Port を満たす |
 
 **フォルダ構成**
 - `mapper` … MyBatis 等による永続化
 - `config` … Spring 等の設定
 - `context` … リクエストスコープの情報（ユーザー情報など）
-- `interface` … **Port の実装**。他文脈の Mapper や API を呼び、Adapters の Port インターフェースを満たす。Frameworks 側の「外部 I/O の実装」であり、Interface Adapters の「Adapter」と混同しないよう、フォルダ名を `interface` にしている
+- `adapter` … **Port の実装**。他文脈の Mapper や API を呼び、usecase の Port インターフェースを満たす
 
 ---
 
@@ -93,8 +93,8 @@ DB・HTTP・設定など、具体的な技術に強く依存する部分。
 - Port の窓口から必要情報を集め、一つの文脈（一つのユースケース）を形成する。
 
 **Port の置き場所**
-- **Port のインターフェース** … Interface Adapters の `port` に置く（「他文脈への問い合わせ」の契約はアプリケーションに近い適合層の責務）。
-- **Port の実装** … Frameworks & Drivers の `interface` に置く。他文脈の Mapper や API を呼ぶ「駆動側」の実装。階層内の「Adapter」との混同を避けるため、フォルダ名は `interface` とする。
+- **Port のインターフェース** … usecase の `port` に置く（「他文脈への問い合わせ」の契約はアプリケーションに近い適合層の責務）。
+- **Port の実装** … Frameworks & Drivers の `adapter` に置く。他文脈の Mapper や API を呼ぶ「駆動側」の実装。
 
 この形にすると、他文脈の Mapper やテーブル構造が変わっても、影響は Port の実装だけに収まり、Enterprise / Application に近い層は安定する。
 
@@ -127,7 +127,7 @@ com.playjava/
 │       ├── MUserController.java
 │       └── OrderController.java
 │
-├── adapters/                      # Interface Adapters
+├── usecase/                       # Interface Adapters（ユースケース層）
 │   ├── dto/
 │   │   ├── CreateOrderRequest.java
 │   │   ├── OrderDetailResponse.java
@@ -141,7 +141,7 @@ com.playjava/
 │   │   └── product/
 │   │       └── ProductExistencePort.java   # 例: 商品の存在・有効性の問い合わせ
 │   ├── service/
-│   │   ├── contract/              # サービスインターフェース（契約）。Frameworks の interface と区別
+│   │   ├── contract/              # サービスインターフェース（契約）。Frameworks の adapter と区別
 │   │   │   ├── MCustomerService.java
 │   │   │   ├── MStockService.java
 │   │   │   ├── MUserService.java
@@ -165,7 +165,7 @@ com.playjava/
     │   ├── MUserMapper.java
     │   ├── TOrderItemMapper.java
     │   └── TOrderMapper.java
-    └── interface/                 # Port の実装（他文脈の Mapper/API を呼ぶ）。"Adapter" と区別するため interface
+    └── adapter/                   # Port の実装（他文脈の Mapper/API を呼ぶ）
         └── product/
             └── ProductExistenceAdapter.java  # 例: ProductExistencePort の実装（クラス名は「○○Adapter」のまま可）
 ```
@@ -176,9 +176,9 @@ com.playjava/
 |----------|------|------|
 | Interface Adapters 層 | 階層名のみ「Adapters」 | HTTP/DB/他文脈との「適合」全般を指す。フォルダ名には使わない |
 | 同上・サービス契約 | `service.contract` | 他層から呼ばれるサービスのインターフェース。旧 service.adapter。別案: `service.api`（公開API）, `service.spi`（提供側インターフェース） |
-| Frameworks 層・Port 実装 | `frameworks.interface` | Port を満たす実装が入るフォルダ。他文脈の Mapper/API を呼ぶ。「Adapter」と混同しないよう `interface` という名前にする |
+| Frameworks 層・Port 実装 | `frameworks.adapter` | Port を満たす実装が入るフォルダ。他文脈の Mapper/API を呼ぶ |
 
 ### 移行の進め方
 1. **Phase 1** … 上記の「役割」と「どのフォルダがどの層か」をドキュメントとチームで揃える。コードは現パッケージのままでもよい。
-2. **Phase 2** … 新規・変更が多い箇所から、`port` と `frameworks.interface`（Port 実装）を導入し、他文脈への依存を Port 経由に切り替える。
-3. **Phase 3** … 必要に応じて、既存クラスを `enterprise` / `application` / `adapters` / `frameworks` のパッケージへ移す。`service.adapter` → `service.contract` へのリネームもこの段階で行う。import の一括変更になり得るため、段階的に行う。
+2. **Phase 2** … 新規・変更が多い箇所から、`port` と `frameworks.adapter`（Port 実装）を導入し、他文脈への依存を Port 経由に切り替える。
+3. **Phase 3** … 必要に応じて、既存クラスを `enterprise` / `application` / `usecase` / `frameworks` のパッケージへ移す。`service.adapter` → `service.contract` へのリネームもこの段階で行う。import の一括変更になり得るため、段階的に行う。
