@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.mybatis.spring.annotation.MapperScan;
 
 @SpringBootApplication
-@MapperScan("com.playjava.mapper")
+@MapperScan("com.playjava.frameworks.mapper")
 public class PlayjavaApplication {
 
 	public static void main(String[] args) {
