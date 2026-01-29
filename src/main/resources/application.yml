@@ -27,6 +27,7 @@ logging:
     root: DEBUG
     org.apache.ibatis: DEBUG
     com.baomidou.mybatisplus: DEBUG
+    org.springdoc: INFO
 
 # SpringDoc OpenAPI設定
 springdoc:
@@ -53,3 +54,6 @@ management:
       enabled: true
     info:
       enabled: true
+  metrics:
+    tags:
+      application: playjava
