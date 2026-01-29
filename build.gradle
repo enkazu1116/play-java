@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.1'
+	id 'org.springframework.boot' version '4.0.2'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -29,7 +29,7 @@ dependencies {
 	// UUID生成ライブラリ
 	implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.0'
 
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc:4.0.1'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc:4.0.2'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	// MyBatis Plus - Spring Boot 4対応版
 	implementation 'com.baomidou:mybatis-plus-spring-boot4-starter:3.5.15'
@@ -43,6 +43,9 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
 	// Vavr
 	implementation 'io.vavr:vavr:0.10.4'
+	// Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	
 
 	// .envファイル読み込み
 	developmentOnly 'me.paulschwarz:springboot4-dotenv:5.1.0'
@@ -50,6 +53,8 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	runtimeOnly 'org.postgresql:postgresql'
+	// Prometheus メトリクス
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'com.fasterxml.jackson.core:jackson-databind'
