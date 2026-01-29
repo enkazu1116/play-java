@@ -39,3 +39,17 @@ springdoc:
     operations-sorter: method
     tags-sorter: alpha
   show-actuator: false
+
+# Spring Boot Actuator設定
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      enabled: true
+    info:
+      enabled: true
