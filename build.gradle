@@ -31,29 +31,27 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc:4.0.2'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	// MyBatis Plus - Spring Boot 4対応版
+	// MyBatis Plus
 	implementation 'com.baomidou:mybatis-plus-spring-boot4-starter:3.5.15'
-	// MyBatis Plus - ページングプラグイン用（v3.5.9以降必須）
-	// PaginationInnerInterceptorを使用するために必要
+	// MyBatis Plus
 	implementation 'com.baomidou:mybatis-plus-jsqlparser:3.5.15'
 	implementation 'com.baomidou:mybatis-plus-extension:3.5.15'
 	implementation 'com.baomidou:mybatis-plus-generator:3.5.15'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	// SpringDoc OpenAPI (Swagger UI) - 3.x は Spring Boot 4 対応
+	// SpringDoc OpenAPI (Swagger UI)
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
 	// Vavr
 	implementation 'io.vavr:vavr:0.10.4'
 	// Actuator
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	
-
 	// .envファイル読み込み
 	developmentOnly 'me.paulschwarz:springboot4-dotenv:5.1.0'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	runtimeOnly 'org.postgresql:postgresql'
-	// Prometheus メトリクス
+	// Prometheus
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
