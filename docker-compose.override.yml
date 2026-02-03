@@ -1,0 +1,7 @@
+# 開発用オーバーライド（docker compose up で自動マージ）
+services:
+  app:
+    build:
+      target: development
+    volumes:
+      - .:/app

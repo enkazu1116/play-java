@@ -1,4 +1,48 @@
 services:
+  app:
+    container_name: playjava-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/playjava
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    networks:
+      - playjava-network
+
+  keycloak:
+    container_name: keycloak
+    image: quay.io/keycloak/keycloak:25.0
+    command: start --import-realm
+    ports:
+      - 8180:8080
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+    volumes:
+      - ./keycloak:/opt/keycloak/data/import
+    networks:
+      - playjava-network
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 60s
+
   postgres:
     container_name: postgres
     image: postgres:18

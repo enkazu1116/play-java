@@ -14,6 +14,11 @@ java {
 	}
 }
 
+// Docker の CMD で固定名を参照するため
+bootJar {
+	archiveFileName = 'playjava.jar'
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -38,6 +43,8 @@ dependencies {
 	implementation 'com.baomidou:mybatis-plus-extension:3.5.15'
 	implementation 'com.baomidou:mybatis-plus-generator:3.5.15'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	// SpringDoc OpenAPI (Swagger UI)
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
 	// Vavr
@@ -55,6 +62,8 @@ dependencies {
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'com.fasterxml.jackson.core:jackson-databind'
 	testRuntimeOnly 'com.h2database:h2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
