@@ -18,8 +18,15 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_healthy
+      fluent-bit:
+        condition: service_started
     networks:
       - playjava-network
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: fluent-bit:24224
+        tag: playjava.app
 
   keycloak:
     container_name: keycloak
@@ -34,6 +41,9 @@ services:
       KC_HEALTH_ENABLED: "true"
     volumes:
       - ./keycloak:/opt/keycloak/data/import
+    depends_on:
+      fluent-bit:
+        condition: service_started
     networks:
       - playjava-network
     healthcheck:
@@ -42,6 +52,11 @@ services:
       timeout: 5s
       retries: 15
       start_period: 60s
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: fluent-bit:24224
+        tag: keycloak
 
   postgres:
     container_name: postgres
@@ -52,6 +67,9 @@ services:
       - .env
     volumes:
       - postgres_data:/var/lib/postgresql
+    depends_on:
+      fluent-bit:
+        condition: service_started
     networks:
       - playjava-network
     healthcheck:
@@ -59,7 +77,12 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-      
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: fluent-bit:24224
+        tag: postgres
+
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
@@ -77,6 +100,68 @@ services:
     networks:
       - playjava-network
 
+  # --- API Gateway (Kong) ---
+  kong:
+    container_name: kong
+    image: kong:3.8
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /opt/kong/kong.yaml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
+      KONG_PROXY_LISTEN: "0.0.0.0:8000"
+    ports:
+      - 8000:8000   # プロキシ (API 経由はここ)
+      - 8001:8001   # Admin API
+    volumes:
+      - ./kong:/opt/kong:ro
+    depends_on:
+      app:
+        condition: service_started
+      fluent-bit:
+        condition: service_started
+    networks:
+      - playjava-network
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: fluent-bit:24224
+        tag: kong
+
+  # --- S3 互換オブジェクトストレージ (RustFS) ---
+  rustfs:
+    container_name: rustfs
+    image: rustfs/rustfs:latest
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:-rustfsadmin}
+      RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:-rustfsadmin}
+      RUSTFS_CONSOLE_ENABLE: "true"
+    volumes:
+      - rustfs_data:/data
+    depends_on:
+      fluent-bit:
+        condition: service_started
+    networks:
+      - playjava-network
+    user: "10001"
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: fluent-bit:24224
+        tag: rustfs
+
+  # --- メトリクス (Prometheus) ---
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
@@ -89,91 +174,78 @@ services:
     networks:
       - playjava-network
 
+  # --- ログストア (Elasticsearch) ---
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      "ES_JAVA_OPTS": "-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - playjava-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"green\"\\|\"status\":\"yellow\"'"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    # ログは標準出力 (fluent-bit は本サービスに依存するため fluentd ドライバは未使用)
+
+  # --- ログ収集エージェント (Fluent Bit) ---
+  fluent-bit:
+    container_name: fluent-bit
+    image: fluent/fluent-bit:3.2
+    volumes:
+      - ./fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - playjava-network
+    ports:
+      - 24224:24224
+
+  # --- 可視化 (Grafana) ---
   grafana:
     container_name: grafana
     image: grafana/grafana:latest
     ports:
       - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - prometheus
+      - elasticsearch
     networks:
       - playjava-network
     env_file:
       - .env
-
-  opensearch-node1:
-    image: opensearchproject/opensearch:3.4.0
-    container_name: opensearch-node1
     environment:
-      - cluster.name=opensearch-cluster
-      - node.name=opensearch-node1
-      - discovery.seed_hosts=opensearch-node1,opensearch-node2
-      - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2
-      - bootstrap.memory_lock=true
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "DISABLE_INSTALL_DEMO_CONFIG=true"
-      - "DISABLE_SECURITY_PLUGIN=true"
-      - OPENSEARCH_INITAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    volumes:
-      - opensearch_data1:/user/share/opensearch_data
-    ports:
-      - 9200:9200
-      - 9600:9600
-    networks:
-      - playjava-network
-  opensearch-node2:
-    image: opensearchproject/opensearch:3.4.0
-    container_name: opensearch-node2
-    environment:
-      - cluster.name=opensearch-cluster
-      - node.name=opensearch-node2
-      - discovery.seed_hosts=opensearch-node1,opensearch-node2
-      - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2
-      - bootstrap.memory_lock=true
-      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "DISABLE_INSTALL_DEMO_CONFIG=true"
-      - "DISABLE_SECURITY_PLUGIN=true"
-      - OPENSEARCH_INITAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    volumes:
-      - opensearch_data2:/user/share/opensearch_data
-    networks:
-      - playjava-network
-    env_file:
-      - .env
-  opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:3.4.0
-    container_name: opensearch-dashboards
-    ports:
-      - 5601:5601
-    expose:
-      - "5601"
-    environment:
-      - 'OPENSEARCH_HOSTS=["http://opensearch-node1:9200", "http://opensearch-node2:9200"]'
-      - "DISABLE_SECURITY_DASHBOARDS_PLUGIN=true"
-    networks:
-      - playjava-network
-    env_file:
-      - .env
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_SERVER_HTTP_PORT: 3000
 
 volumes:
   postgres_data:
   pgadmin_data:
-  opensearch_data1:
-  opensearch_data2:
+  rustfs_data:
+  elasticsearch_data:
+  grafana_data:
 
 networks:
   playjava-network:
