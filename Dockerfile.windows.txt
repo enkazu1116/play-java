@@ -1,0 +1,31 @@
+# Windows 用 Dockerfile（参考用・テキスト）
+# 本番のビルドでは Mac 用 Dockerfile を使用するため、このファイルは .txt で保管。
+# Windows 環境で Docker ビルドする場合にのみ、内容を Dockerfile にコピーして利用すること。
+
+# --- 以下を Dockerfile として使う場合の内容 ---
+
+FROM bellsoft/liberica-openjdk-debian:25 AS base
+WORKDIR /app
+
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle settings.gradle ./
+# Windows で作成した gradlew の CRLF を LF に変換（Linux で実行するため）
+RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
+RUN ./gradlew dependencies --no-daemon
+
+# 開発用
+FROM base AS development
+COPY . .
+RUN sed -i 's/\r$//' gradlew
+EXPOSE 8080
+CMD ["./gradlew", "bootRun", "--continuous", "--no-daemon"]
+
+# 本番用
+FROM base AS prod
+COPY . .
+RUN sed -i 's/\r$//' gradlew && ./gradlew clean bootJar --no-daemon
+EXPOSE 8080
+CMD ["java", "-jar", "build/libs/playjava.jar"]
+
+# --- 以上 ---

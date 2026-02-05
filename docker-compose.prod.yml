@@ -1,0 +1,6 @@
+# 本番用オーバーライド
+# 使い方: docker compose -f docker-compose.yml -f docker-compose.prod.yml up app
+services:
+  app:
+    build:
+      target: prod
