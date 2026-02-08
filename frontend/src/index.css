@@ -1,4 +1,9 @@
+/**
+ * グローバルスタイル
+ * - Tailwind とレイアウト用 layouts.css を読み込み
+ */
 @import "tailwindcss";
+@import "./styles/layouts.css";
 
 :root {
   font-family: system-ui, sans-serif;
