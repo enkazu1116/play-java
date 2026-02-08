@@ -1,4 +1,3 @@
-# Mac 環境用。Windows では使用しない（参考: Dockerfile.windows.txt）
 FROM bellsoft/liberica-openjdk-debian:25 AS base
 WORKDIR /app
 
