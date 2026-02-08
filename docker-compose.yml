@@ -12,12 +12,9 @@ services:
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
-      KEYCLOAK_ISSUER_URI: http://keycloak:8080/realms/playjava
     depends_on:
       postgres:
         condition: service_healthy
-      keycloak:
-        condition: service_healthy
       fluent-bit:
         condition: service_started
     networks:
@@ -25,38 +22,8 @@ services:
     logging:
       driver: fluentd
       options:
-        fluentd-address: fluent-bit:24224
+        fluentd-address: host.docker.internal:24224
         tag: playjava.app
-
-  keycloak:
-    container_name: keycloak
-    image: quay.io/keycloak/keycloak:25.0
-    command: start --import-realm
-    ports:
-      - 8180:8080
-    environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
-      KC_HTTP_ENABLED: "true"
-      KC_HEALTH_ENABLED: "true"
-    volumes:
-      - ./keycloak:/opt/keycloak/data/import
-    depends_on:
-      fluent-bit:
-        condition: service_started
-    networks:
-      - playjava-network
-    healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
-      interval: 10s
-      timeout: 5s
-      retries: 15
-      start_period: 60s
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: fluent-bit:24224
-        tag: keycloak
 
   postgres:
     container_name: postgres
@@ -80,7 +47,7 @@ services:
     logging:
       driver: fluentd
       options:
-        fluentd-address: fluent-bit:24224
+        fluentd-address: host.docker.internal:24224
         tag: postgres
 
   pgadmin:
@@ -100,7 +67,6 @@ services:
     networks:
       - playjava-network
 
-  # --- API Gateway (Kong) ---
   kong:
     container_name: kong
     image: kong:3.8
@@ -114,8 +80,8 @@ services:
       KONG_ADMIN_LISTEN: "0.0.0.0:8001"
       KONG_PROXY_LISTEN: "0.0.0.0:8000"
     ports:
-      - 8000:8000   # プロキシ (API 経由はここ)
-      - 8001:8001   # Admin API
+      - 8000:8000
+      - 8001:8001
     volumes:
       - ./kong:/opt/kong:ro
     depends_on:
@@ -133,10 +99,9 @@ services:
     logging:
       driver: fluentd
       options:
-        fluentd-address: fluent-bit:24224
+        fluentd-address: host.docker.internal:24224
         tag: kong
 
-  # --- S3 互換オブジェクトストレージ (RustFS) ---
   rustfs:
     container_name: rustfs
     image: rustfs/rustfs:latest
@@ -158,10 +123,9 @@ services:
     logging:
       driver: fluentd
       options:
-        fluentd-address: fluent-bit:24224
+        fluentd-address: host.docker.internal:24224
         tag: rustfs
 
-  # --- メトリクス (Prometheus) ---
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
@@ -174,7 +138,6 @@ services:
     networks:
       - playjava-network
 
-  # --- ログストア (Elasticsearch) ---
   elasticsearch:
     container_name: elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
@@ -202,9 +165,7 @@ services:
       timeout: 5s
       retries: 10
       start_period: 60s
-    # ログは標準出力 (fluent-bit は本サービスに依存するため fluentd ドライバは未使用)
 
-  # --- ログ収集エージェント (Fluent Bit) ---
   fluent-bit:
     container_name: fluent-bit
     image: fluent/fluent-bit:3.2
@@ -218,7 +179,6 @@ services:
     ports:
       - 24224:24224
 
-  # --- 可視化 (Grafana) ---
   grafana:
     container_name: grafana
     image: grafana/grafana:latest
