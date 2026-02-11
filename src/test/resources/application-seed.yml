@@ -1,0 +1,5 @@
+# テスト用シードデータを投入する場合に使用: -Dspring.profiles.active=seed
+spring:
+  sql:
+    init:
+      data-locations: classpath:data.sql

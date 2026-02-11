@@ -2,13 +2,16 @@ spring:
   application:
     name: playjava
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?currentSchema=app
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   docker:
     compose:
       enabled: false
+  flyway:
+    enabled: true
+    default-schema: app
 
 mybatis-plus:
   configuration:
@@ -25,9 +28,11 @@ mybatis-plus:
 logging:
   level:
     root: DEBUG
-    org.apache.ibatis: DEBUG
+    org.apache.mybatis: DEBUG
+    org.springframework.boot.autoconfigure: INFO 
     com.baomidou.mybatisplus: DEBUG
     org.springdoc: INFO
+    org.flywaydb: INFO
 
 # SpringDoc OpenAPI設定
 springdoc:
