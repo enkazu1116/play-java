@@ -24,8 +24,6 @@ import io.vavr.control.Option;
 @Service
 @RequiredArgsConstructor
 public class MUserServiceImpl extends ServiceImpl<MUserMapper, MUser> implements MUserService {
-    
-    private final MUserMapper mUserMapper;
 
     /**
      * ユーザー作成処理

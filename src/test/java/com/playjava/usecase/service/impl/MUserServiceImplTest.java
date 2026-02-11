@@ -3,7 +3,6 @@ package com.playjava.usecase.service.impl;
 import com.playjava.frameworks.context.UserContext;
 import com.playjava.enterprise.entity.MUser;
 import com.playjava.enterprise.valueobject.SystemUser;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -646,10 +645,9 @@ class MUserServiceImplTest {
         user.setPassword("password123");
         UserContext.clear();
         mUserService.createUserImpl(user);
-        String userId = user.getUserId();
 
         // When: 自分自身のIDを除外してチェック
-        boolean exists = mUserService.existsByUserName("exclude_duplicate", userId);
+        boolean exists = mUserService.existsByUserName("exclude_duplicate", user.getUserId());
 
         // Then: 自分自身は除外されるのでfalseが返ること
         assertFalse(exists, "自分自身を除外した場合、falseが返ること");
@@ -664,17 +662,15 @@ class MUserServiceImplTest {
         user1.setPassword("password123");
         UserContext.clear();
         mUserService.createUserImpl(user1);
-        String userId1 = user1.getUserId();
 
         MUser user2 = new MUser();
         user2.setUserName("duplicate_test_other");
         user2.setPassword("password456");
         UserContext.clear();
         mUserService.createUserImpl(user2);
-        String userId2 = user2.getUserId();
 
         // When: user2のIDを除外して、user1の名前をチェック
-        boolean exists = mUserService.existsByUserName("duplicate_name", userId2);
+        boolean exists = mUserService.existsByUserName("duplicate_name", user2.getUserId());
 
         // Then: user1が存在するのでtrueが返ること
         assertTrue(exists, "他のユーザーが同じ名前を使っている場合、trueが返ること");

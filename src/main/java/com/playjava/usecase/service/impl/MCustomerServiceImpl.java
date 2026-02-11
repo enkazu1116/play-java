@@ -28,7 +28,7 @@ public class MCustomerServiceImpl extends ServiceImpl<MCustomerMapper, MCustomer
     public boolean createCustomerImpl(MCustomer customer) {
         // UUIDv7を生成して顧客IDを設定
         UUID customerId = UuidFactory.newUuid();
-        customer.setCustomerId(customerId.toString());
+        customer.setCustomerId(customerId);
 
         // 顧客番号を自動生成（重複チェック付き）
         String customerNumber = generateUniqueCustomerNumber();
@@ -202,7 +202,7 @@ public class MCustomerServiceImpl extends ServiceImpl<MCustomerMapper, MCustomer
      * @param customerId 削除対象の顧客ID
      * @return 削除成功の場合true
      */
-    public boolean deleteCustomerImpl(String customerId) {
+    public boolean deleteCustomerImpl(UUID customerId) {
         // 存在チェック（論理削除を含めて取得）
         MCustomer existingCustomer = this.getBaseMapper().selectByIdIncludeDeleted(customerId);
         

@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.UUID;
+
 @SpringBootTest
 @Transactional
 @DisplayName("MCustomerController テスト")
@@ -51,7 +53,7 @@ class MCustomerControllerTest {
         customer.setMobileNumber("09011112222");
         mCustomerController.createCustomer(customer);
 
-        String customerId = customer.getCustomerId();
+        UUID customerId = customer.getCustomerId();
         customer.setCustomerName("after_update");
 
         assertDoesNotThrow(() -> mCustomerController.updateCustomer(customer));
@@ -68,7 +70,7 @@ class MCustomerControllerTest {
         customer.setMobileNumber("09033334444");
         mCustomerController.createCustomer(customer);
 
-        String customerId = customer.getCustomerId();
+        UUID customerId = customer.getCustomerId();
 
         assertDoesNotThrow(() -> mCustomerController.deleteCustomer(customerId));
         assertNull(mCustomerService.getById(customerId), "論理削除後は取得できないこと");
