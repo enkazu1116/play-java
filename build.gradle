@@ -30,25 +30,37 @@ repositories {
 }
 
 dependencies {
-	implementation(platform("me.paulschwarz:spring-dotenv-bom:5.1.0"))
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc:4.0.2'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	
+	// .envファイル読み込み
+	implementation(platform('me.paulschwarz:spring-dotenv-bom:5.1.0'))
+
 	// UUID生成ライブラリ
 	implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.0'
 
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc:4.0.2'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// Flyway
+	// implementation 'org.flywaydb:flyway-core'
+	implementation 'org.springframework.boot:spring-boot-starter-flyway:4.0.2'
+	runtimeOnly 'org.flywaydb:flyway-database-postgresql:10.18.2'
+	// implementation 'org.flywaydb:flyway-database-postgresql'
+	
 	// MyBatis Plus
 	implementation 'com.baomidou:mybatis-plus-spring-boot4-starter:3.5.15'
-	// MyBatis Plus
 	implementation 'com.baomidou:mybatis-plus-jsqlparser:3.5.15'
 	implementation 'com.baomidou:mybatis-plus-extension:3.5.15'
 	implementation 'com.baomidou:mybatis-plus-generator:3.5.15'
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	
 	// SpringDoc OpenAPI (Swagger UI)
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
+
 	// Vavr
 	implementation 'io.vavr:vavr:0.10.4'
+
 	// Actuator
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 	// .envファイル読み込み
 	developmentOnly 'me.paulschwarz:springboot4-dotenv:5.1.0'
 
@@ -56,8 +68,10 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	runtimeOnly 'org.postgresql:postgresql'
+
 	// Prometheus
 	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'

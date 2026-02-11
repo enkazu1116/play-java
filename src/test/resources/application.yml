@@ -12,6 +12,8 @@ spring:
   sql:
     init:
       mode: always
+      # テーブル作成: schema.sql / レコード投入: data.sql（プロファイル seed で有効。通常テストでは無効で既存テストと競合を防ぐ）
+      data-locations: optional:classpath:nonexistent.sql
 
 mybatis-plus:
   configuration:
