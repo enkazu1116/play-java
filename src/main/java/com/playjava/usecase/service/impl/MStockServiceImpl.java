@@ -144,7 +144,6 @@ public class MStockServiceImpl extends ServiceImpl<MStockMapper, MStock> impleme
     /**
      * 在庫検索条件の共通Wrapper生成
      * 注意: 商品名による検索はJOINが必要なため、現時点ではproductIdのみで検索する
-     * TODO: 商品マスタとJOINして商品名での検索を実装する
      */
     private LambdaQueryWrapper<MStock> buildSearchWrapper(
             String productId,
@@ -161,11 +160,7 @@ public class MStockServiceImpl extends ServiceImpl<MStockMapper, MStock> impleme
             wrapper.eq(MStock::getProductId, productId);
         }
 
-        // 商品名（部分一致）は商品マスタとJOINが必要なため、現時点では未実装
-        // TODO: 商品マスタとJOINして商品名での検索を実装する
         if (productName != null && !productName.isEmpty()) {
-            // 商品名で商品IDを取得してから在庫を検索する必要がある
-            // 簡易実装として、productIdで検索する（商品名検索は別途実装が必要）
         }
 
         // 在庫数量最小値（以上）

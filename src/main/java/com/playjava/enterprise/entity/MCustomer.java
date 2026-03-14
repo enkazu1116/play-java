@@ -4,12 +4,13 @@ import com.baomidou.mybatisplus.annotation.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @TableName("m_customer")
 public class MCustomer {
     @TableId(type = IdType.ASSIGN_UUID)
-    private String customerId;
+    private UUID customerId;
     private String customerNumber;
     
     @NotBlank(message = "顧客名は必須です")
@@ -34,11 +35,11 @@ public class MCustomer {
 
     // 自動設定
     @TableField(fill = FieldFill.INSERT)
-    private String createUser;
+    private UUID createUser;
     @TableField(fill = FieldFill.INSERT)
     private OffsetDateTime createDate;
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private String updateUser;
+    private UUID updateUser;
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private OffsetDateTime updateDate;
 }

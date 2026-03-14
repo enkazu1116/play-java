@@ -1,0 +1,43 @@
+-- H2テスト用初期データ（テスト用テーブル設計に基づく）
+-- 実行順序: schema.sql の後に Spring Boot が自動実行
+-- レコードを投入してテストする場合: -Dspring.profiles.active=seed で起動
+-- 注: ユーザー名・番号は既存テストと重複しないよう seed-* / C9*, P9* を使用
+
+-- ユーザーマスタ（role: 1=一般, 2=システム管理者）
+INSERT INTO m_user (user_id, user_name, password, role, delete_flag, create_date, update_date)
+VALUES
+    ('11111111-1111-1111-1111-111111111101', 'seed-admin', '{noop}admin', 2, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('11111111-1111-1111-1111-111111111102', 'seed-user', '{noop}user', 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 顧客マスタ
+INSERT INTO m_customer (customer_id, customer_number, customer_name, address, phone_number, email, delete_flag, create_date, update_date)
+VALUES
+    ('22222222-2222-2222-2222-222222222201', 'C900000001', 'テスト顧客1', '東京都渋谷区', '090-1234-5678', 'customer1@example.com', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('22222222-2222-2222-2222-222222222202', 'C900000002', 'テスト顧客2', '大阪府大阪市', '080-9876-5432', 'customer2@example.com', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 商品マスタ（category: 1=一般など）
+INSERT INTO m_product (product_id, product_number, product_name, description, price, category, delete_flag, create_date, update_date)
+VALUES
+    ('33333333-3333-3333-3333-333333333301', 'P900000001', 'テスト商品A', '説明A', 1000, 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('33333333-3333-3333-3333-333333333302', 'P900000002', 'テスト商品B', '説明B', 2000, 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('33333333-3333-3333-3333-333333333303', 'P900000003', 'テスト商品C', '説明C', 1500, 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 在庫マスタ（status: 0=利用可能など。商品に1:1）
+INSERT INTO m_stock (stock_id, product_id, quantity, status, delete_flag, create_date, update_date)
+VALUES
+    ('44444444-4444-4444-4444-444444444401', '33333333-3333-3333-3333-333333333301', 100, 0, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('44444444-4444-4444-4444-444444444402', '33333333-3333-3333-3333-333333333302', 50, 0, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('44444444-4444-4444-4444-444444444403', '33333333-3333-3333-3333-333333333303', 80, 0, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 注文トランザクション（status: 1=受付など）
+INSERT INTO t_order (order_id, customer_id, order_date, status, delete_flag, create_date, update_date)
+VALUES
+    ('55555555-5555-5555-5555-555555555501', '22222222-2222-2222-2222-222222222201', CURRENT_TIMESTAMP, 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('55555555-5555-5555-5555-555555555502', '22222222-2222-2222-2222-222222222202', CURRENT_TIMESTAMP, 1, FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- 注文明細トランザクション
+INSERT INTO t_order_item (order_item_id, order_id, product_id, quantity, unit_price, create_date, update_date)
+VALUES
+    ('66666666-6666-6666-6666-666666666601', '55555555-5555-5555-5555-555555555501', '33333333-3333-3333-3333-333333333301', 2, 1000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('66666666-6666-6666-6666-666666666602', '55555555-5555-5555-5555-555555555501', '33333333-3333-3333-3333-333333333302', 1, 2000, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('66666666-6666-6666-6666-666666666603', '55555555-5555-5555-5555-555555555502', '33333333-3333-3333-3333-333333333303', 3, 1500, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

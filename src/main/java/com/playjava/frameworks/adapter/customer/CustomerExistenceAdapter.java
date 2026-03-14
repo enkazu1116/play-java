@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.playjava.usecase.port.customer.CustomerExistencePort;
 import com.playjava.frameworks.mapper.MCustomerMapper;
 import com.playjava.enterprise.entity.MCustomer;
+import java.util.UUID;
 
 /**
  * CustomerExistencePort の実装。
@@ -18,8 +19,8 @@ public class CustomerExistenceAdapter implements CustomerExistencePort {
     private MCustomerMapper mCustomerMapper;
 
     @Override
-    public boolean existsActiveCustomer(String customerId) {
-        if (customerId == null || customerId.isEmpty()) {
+    public boolean existsActiveCustomer(UUID customerId) {
+        if (customerId == null) {
             return false;
         }
         MCustomer customer = mCustomerMapper.selectById(customerId);

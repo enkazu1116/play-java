@@ -1,6 +1,9 @@
 package com.playjava.application.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.playjava.usecase.service.impl.MCustomerServiceImpl;
@@ -60,7 +63,7 @@ public class MCustomerController {
 
     // 顧客論理削除
     @DeleteMapping("/{customerId}")
-    public void deleteCustomer(@PathVariable String customerId) {
+    public void deleteCustomer(@PathVariable UUID customerId) {
         log.info("deleteCustomer: customerId={}", customerId);
         
         try {

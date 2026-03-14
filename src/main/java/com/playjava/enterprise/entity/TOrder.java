@@ -3,13 +3,14 @@ package com.playjava.enterprise.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 @TableName("t_order")
 public class TOrder {
     @TableId(type = IdType.ASSIGN_UUID)
     private String orderId;
-    private String customerId;
+    private UUID customerId;
     private OffsetDateTime orderDate;
     private Integer status;
 

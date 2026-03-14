@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.playjava.enterprise.entity.TOrder;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -115,7 +116,7 @@ public class OrderController {
     @GetMapping("/search")
     public IPage<TOrder> searchOrder(
             @RequestParam(required = false) String orderId,
-            @RequestParam(required = false) String customerId,
+            @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) OffsetDateTime orderDateFrom,
             @RequestParam(required = false) OffsetDateTime orderDateTo,
             @RequestParam(required = false) Integer status,

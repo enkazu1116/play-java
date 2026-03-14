@@ -326,7 +326,7 @@ public class OrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder> implemen
      */
     public IPage<TOrder> searchOrderImpl(
             String orderId,
-            String customerId,
+            UUID customerId,
             OffsetDateTime orderDateFrom,
             OffsetDateTime orderDateTo,
             Integer status,
@@ -396,7 +396,7 @@ public class OrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder> implemen
      */
     private LambdaQueryWrapper<TOrder> buildSearchWrapper(
             String orderId,
-            String customerId,
+            UUID customerId,
             OffsetDateTime orderDateFrom,
             OffsetDateTime orderDateTo,
             Integer status,
@@ -410,7 +410,7 @@ public class OrderServiceImpl extends ServiceImpl<TOrderMapper, TOrder> implemen
         }
 
         // 顧客ID（完全一致）
-        if (customerId != null && !customerId.isEmpty()) {
+        if (customerId != null) {
             wrapper.eq(TOrder::getCustomerId, customerId);
         }
 

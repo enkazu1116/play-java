@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,7 +58,7 @@ class MCustomerServiceImplTest {
         customer.setEmail("before@example.com");
         mCustomerService.createCustomerImpl(customer);
 
-        String customerId = customer.getCustomerId();
+        UUID customerId = customer.getCustomerId();
         String originalNumber = customer.getCustomerNumber();
 
         customer.setCustomerName("update_after");
@@ -82,7 +83,7 @@ class MCustomerServiceImplTest {
         customer.setMobileNumber("09055556666");
         mCustomerService.createCustomerImpl(customer);
 
-        String customerId = customer.getCustomerId();
+        UUID customerId = customer.getCustomerId();
 
         boolean result = mCustomerService.deleteCustomerImpl(customerId);
 
